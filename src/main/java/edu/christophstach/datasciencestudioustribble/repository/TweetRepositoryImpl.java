@@ -20,7 +20,6 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
  * Implementation of the MongoDB Tweet repository
  */
 @Repository
-@Document(collection = "tweetsGeoBerlin")
 public class TweetRepositoryImpl implements TweetRepositoryCustom {
   @Autowired
   private MongoTemplate mongo;

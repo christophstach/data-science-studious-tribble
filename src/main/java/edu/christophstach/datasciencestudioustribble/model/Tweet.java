@@ -12,7 +12,7 @@ import java.util.Date;
  * <p>
  * A tweet
  */
-@Document(collection = "tweetsGermanStopWords")
+@Document(collection = "tweetsBerlinGeo")
 public class Tweet {
 
 

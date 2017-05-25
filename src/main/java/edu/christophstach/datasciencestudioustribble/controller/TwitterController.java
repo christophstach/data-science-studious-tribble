@@ -20,7 +20,7 @@ public class TwitterController {
   @Autowired
   private TweetRepository tweetRepository;
 
-  @CrossOrigin(origins = {"http://localhost:8081", "https://christophstach.github.io"})
+  @CrossOrigin(origins = {"http://christoph-stach.de", "https://christophstach.github.io"})
   @GetMapping("/twitter/most-used-hash-tags-all")
   public List<HashTagOccurrence> mostUsedHashTagsAll() {
     return tweetRepository.getHashTagOccurrences();

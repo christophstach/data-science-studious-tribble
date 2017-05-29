@@ -10,5 +10,10 @@ import java.util.List;
  * Custom methods for the Tweet repository
  */
 public interface TweetRepositoryCustom {
+  /**
+   * Returns a list of how often hash tags occurred in tweets
+   *
+   * @return The list of has tag occurrences
+   */
   public List<HashTagOccurrence> getHashTagOccurrences();
 }

@@ -1,6 +1,5 @@
 package edu.christophstach.datasciencestudioustribble.controller;
 
-import edu.christophstach.datasciencestudioustribble.model.Tweet;
 import edu.christophstach.datasciencestudioustribble.model.diagram.HashTagOccurrence;
 import edu.christophstach.datasciencestudioustribble.repository.TweetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +7,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.logging.Logger;
 
 /**
  * Created by Christoph Stach on 5/21/17.
@@ -19,9 +19,10 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = {"http://christoph-stach.de", "https://christophstach.github.io"})
 public class TwitterController {
+  private final static Logger logger = Logger.getLogger(TwitterController.class.getName());
+
   @Autowired
   private TweetRepository tweetRepository;
-
 
   @GetMapping("/twitter/most-used-hash-tags-all")
   public List<HashTagOccurrence> mostUsedHashTagsAll() {
@@ -30,46 +31,23 @@ public class TwitterController {
 
   @GetMapping("/twitter/tweets-per-weekday")
   public int[] tweetsPerWeekday() {
-    int[] a = new int[8];
+    final long timeStart = System.currentTimeMillis();
+    int[] a = tweetRepository.getTweetsPerWeekday();
+    final long timeEnd = System.currentTimeMillis();
 
-    List<Tweet> tweets = tweetRepository.findAll();
+    logger.info(String.format(Locale.GERMANY, "Zeit der Anfrage: %,d ms", (timeEnd - timeStart)));
 
-    /*
-    Wir können hier leider keine parallel Streams verweden.
-    Ich muss erstmal rausfidnen wie ich das am besten mit parallel streams machen
-    Benutzt man hier einfach parallelStream() bekommt man jedes mal ein anderes ergebnes
-     */
-    tweets.forEach(tweet -> {
-      final Calendar calendar = Calendar.getInstance();
-      calendar.setTime(tweet.created_at);
-      int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-
-      a[dayOfWeek]++;
-    });
-
-    //Remapping of new array where the first element is not empty and that the week starts with monday
-    return new int[]{a[2], a[3], a[4], a[5], a[6], a[7], a[1]};
+    //Remapping of new array where the first element is monday
+    return new int[]{a[1], a[2], a[3], a[4], a[5], a[6], a[0]};
   }
 
   @GetMapping("/twitter/tweets-per-hour")
   public int[] tweetsPerHour() {
-    int[] a = new int[24];
+    final long timeStart = System.currentTimeMillis();
+    int[] a = tweetRepository.getTweetsPerHour();
+    final long timeEnd = System.currentTimeMillis();
 
-    List<Tweet> tweets = tweetRepository.findAll();
-
-    /*
-    Wir können hier leider keine parallel Streams verweden.
-    Ich muss erstmal rausfidnen wie ich das am besten mit parallel streams machen
-    Benutzt man hier einfach parallelStream() bekommt man jedes mal ein anderes ergebnes
-     */
-    tweets.forEach(tweet -> {
-      final Calendar calendar = Calendar.getInstance();
-      calendar.setTime(tweet.created_at);
-      int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
-
-      //Works correct, no remapping is needed, but I should test a bit more
-      a[hourOfDay]++;
-    });
+    logger.info(String.format(Locale.GERMANY, "Zeit der Anfrage: %,d ms", (timeEnd - timeStart)));
 
     return a;
   }

@@ -16,4 +16,17 @@ public interface TweetRepositoryCustom {
    * @return The list of has tag occurrences
    */
   public List<HashTagOccurrence> getHashTagOccurrences();
+
+  /**
+   * Returns tweets per hour
+   *
+   * @return An array of tweets per hour
+   */
+  public int[] getTweetsPerHour();
+
+  /**
+   * Returns tweets per weekday
+   * @return An array of tweets per hour
+   */
+  public int[] getTweetsPerWeekday();
 }

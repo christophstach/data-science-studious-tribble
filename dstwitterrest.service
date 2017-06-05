@@ -1,6 +1,6 @@
 [Unit]
 Description=A Service which starts a Spring Boot web server which is needed for our data science twitter project.
-After=syslog.target
+After=syslog.target mongodb.service
 
 [Service]
 ExecStart=/var/dstwitterrest/data-science-studious-tribble-1.0.0.jar

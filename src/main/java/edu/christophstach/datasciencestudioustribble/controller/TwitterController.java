@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
  * Serves the Twitter related requests
  */
 @RestController
-@CrossOrigin(origins = {"http://christoph-stach.de", "https://christophstach.github.io"})
+@CrossOrigin(origins = {"http://christoph-stach.de", "https://christophstach.github.io", "http://localhost:8081", "http://127.0.0.1:8081"})
 public class TwitterController {
   private final static Logger logger = Logger.getLogger(TwitterController.class.getName());
 
@@ -25,29 +26,35 @@ public class TwitterController {
   private TweetRepository tweetRepository;
 
   @GetMapping("/twitter/most-used-hash-tags-all")
-  public List<HashTagOccurrence> mostUsedHashTagsAll() {
-    return tweetRepository.getHashTagOccurrences();
+  public List<HashTagOccurrence> mostUsedHashTagsAll() throws IOException {
+    final long timeStart = System.currentTimeMillis();
+    List<HashTagOccurrence> result = tweetRepository.getHashTagOccurrences();
+    final long timeEnd = System.currentTimeMillis();
+
+    logger.info(String.format(Locale.GERMANY, "Zeit der Anfrage 'most-used-hash-tags-all': %,d ms", (timeEnd - timeStart)));
+
+    return result;
   }
 
   @GetMapping("/twitter/tweets-per-weekday")
-  public int[] tweetsPerWeekday() {
+  public int[] tweetsPerWeekday() throws IOException {
     final long timeStart = System.currentTimeMillis();
     int[] a = tweetRepository.getTweetsPerWeekday();
     final long timeEnd = System.currentTimeMillis();
 
-    logger.info(String.format(Locale.GERMANY, "Zeit der Anfrage: %,d ms", (timeEnd - timeStart)));
+    logger.info(String.format(Locale.GERMANY, "Zeit der Anfrage 'tweets-per-weekday': %,d ms", (timeEnd - timeStart)));
 
     //Remapping of new array where the first element is monday
     return new int[]{a[1], a[2], a[3], a[4], a[5], a[6], a[0]};
   }
 
   @GetMapping("/twitter/tweets-per-hour")
-  public int[] tweetsPerHour() {
+  public int[] tweetsPerHour() throws IOException {
     final long timeStart = System.currentTimeMillis();
     int[] a = tweetRepository.getTweetsPerHour();
     final long timeEnd = System.currentTimeMillis();
 
-    logger.info(String.format(Locale.GERMANY, "Zeit der Anfrage: %,d ms", (timeEnd - timeStart)));
+    logger.info(String.format(Locale.GERMANY, "Zeit der Anfrage 'tweets-per-hour': %,d ms", (timeEnd - timeStart)));
 
     return a;
   }

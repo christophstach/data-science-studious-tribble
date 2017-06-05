@@ -2,5 +2,5 @@ db.tweetsBerlinGeo.find({
     timestamp_ms_long: { $exists: false }
 }).forEach(function(doc) {
     doc.timestamp_ms_long = NumberLong(doc.timestamp_ms);
-    db.tweetsBerlinGeoAlt.save(doc);
+    db.tweetsBerlinGeo.save(doc);
 });

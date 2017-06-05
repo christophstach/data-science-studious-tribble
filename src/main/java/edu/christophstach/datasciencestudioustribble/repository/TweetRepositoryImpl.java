@@ -1,7 +1,5 @@
 package edu.christophstach.datasciencestudioustribble.repository;
 
-import com.mongodb.client.model.Aggregates;
-import com.mongodb.client.model.Filters;
 import edu.christophstach.datasciencestudioustribble.model.MapReduceKeyValue;
 import edu.christophstach.datasciencestudioustribble.model.Tweet;
 import edu.christophstach.datasciencestudioustribble.model.diagram.HashTagOccurrence;
@@ -13,17 +11,18 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.mapreduce.MapReduceOptions;
 import org.springframework.data.mongodb.core.mapreduce.MapReduceResults;
-import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
-
+import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 /**
  * Created by Christoph Stach on 5/24/17.
@@ -47,64 +46,74 @@ public class TweetRepositoryImpl implements TweetRepositoryCustom {
   }
 
   @Override
-  public List<HashTagOccurrence> getHashTagOccurrences() throws IOException {
-    /*List<HashTagOccurrence> r = new LinkedList<>();
-    MapReduceResults<HashTagOccurrence> results;
-    MapReduceOptions options = new MapReduceOptions();
-    options.outputTypeInline();
-
-    String mapFn = readJavaScript("HashTagOccurrences.map.js");
-    String reduceFn = readJavaScript("HashTagOccurrences.reduce.js");
-
-    results = mongo.mapReduce(collectionName, mapFn, reduceFn, options, HashTagOccurrence.class);
-    results.forEach(r::add);
-
-
-    r.sort(Comparator.(HashTagOccurrence::getCount));
-    r = r.subList(0, 50);
-    return r;*/
-
-
+  public List<HashTagOccurrence> getHashTagOccurrences(Date from, Date to) throws IOException {
     Aggregation aggregation;
-    aggregation = newAggregation(
-            match(Criteria.where("timestamp_ms_long").gte("5")),
-            unwind("entities.hashtags"),
-            group("entities.hashtags.text").count().as("count"),
-            sort(Sort.Direction.DESC, "count"),
-            limit(50)
-    );
+
+    if (from != null && to != null) {
+      aggregation = newAggregation(
+              match(where("created_at_date").gte(from).lt(to)),
+              unwind("entities.hashtags"),
+              group("entities.hashtags.text").count().as("count"),
+              sort(Sort.Direction.DESC, "count"),
+              limit(50)
+      );
+
+    } else {
+      aggregation = newAggregation(
+              unwind("entities.hashtags"),
+              group("entities.hashtags.text").count().as("count"),
+              sort(Sort.Direction.DESC, "count"),
+              limit(50)
+      );
+    }
 
     return mongo.aggregate(aggregation, Tweet.class, HashTagOccurrence.class).getMappedResults();
 
   }
 
   @Override
-  public int[] getTweetsPerHour() throws IOException {
+  public int[] getTweetsPerHour(Date from, Date to) throws IOException {
     int[] r = new int[24];
     MapReduceResults<MapReduceKeyValue> results;
-    MapReduceOptions options = new MapReduceOptions();
-    options.outputTypeInline();
+    MapReduceOptions options = new MapReduceOptions().outputTypeInline();
+    Query query = new Query();
+
+    if (from != null && to != null) {
+      query.addCriteria(
+              where("created_at_date")
+                      .gte(from)
+                      .lt(to)
+      );
+    }
 
     String mapFn = readJavaScript("TweetsPerHour.map.js");
     String reduceFn = readJavaScript("TweetsPerHour.reduce.js");
 
-    results = mongo.mapReduce(collectionName, mapFn, reduceFn, options, MapReduceKeyValue.class);
+    results = mongo.mapReduce(query, collectionName, mapFn, reduceFn, options, MapReduceKeyValue.class);
     results.forEach(mapReduceKeyValue -> r[mapReduceKeyValue.getKey()] = mapReduceKeyValue.getValue());
 
     return r;
   }
 
   @Override
-  public int[] getTweetsPerWeekday() throws IOException {
+  public int[] getTweetsPerWeekday(Date from, Date to) throws IOException {
     int[] r = new int[7];
     MapReduceResults<MapReduceKeyValue> results;
-    MapReduceOptions options = new MapReduceOptions();
-    options.outputTypeInline();
+    MapReduceOptions options = new MapReduceOptions().outputTypeInline();
+    Query query = new Query();
+
+    if (from != null && to != null) {
+      query.addCriteria(
+              where("created_at_date")
+                      .gte(from)
+                      .lt(to)
+      );
+    }
 
     String mapFn = readJavaScript("TweetsPerWeekday.map.js");
     String reduceFn = readJavaScript("TweetsPerWeekday.reduce.js");
 
-    results = mongo.mapReduce(collectionName, mapFn, reduceFn, options, MapReduceKeyValue.class);
+    results = mongo.mapReduce(query, collectionName, mapFn, reduceFn, options, MapReduceKeyValue.class);
     results.forEach(mapReduceKeyValue -> r[mapReduceKeyValue.getKey()] = mapReduceKeyValue.getValue());
 
     return r;

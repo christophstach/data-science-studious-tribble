@@ -30,8 +30,8 @@ public class TwitterController {
 
   @GetMapping("/twitter/most-used-hash-tags-all")
   public List<HashTagOccurrence> mostUsedHashTagsAll(
-          @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date from,
-          @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date to
+          @RequestParam(value = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date from,
+          @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date to
   ) throws IOException {
     final long timeStart = System.currentTimeMillis();
     List<HashTagOccurrence> result = tweetRepository.getHashTagOccurrences(from, to);
@@ -44,8 +44,8 @@ public class TwitterController {
 
   @GetMapping("/twitter/tweets-per-weekday")
   public int[] tweetsPerWeekday(
-          @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date from,
-          @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date to
+          @RequestParam(value = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date from,
+          @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date to
   ) throws IOException {
     final long timeStart = System.currentTimeMillis();
     int[] a = tweetRepository.getTweetsPerWeekday(from, to);
@@ -59,8 +59,8 @@ public class TwitterController {
 
   @GetMapping("/twitter/tweets-per-hour")
   public int[] tweetsPerHour(
-          @RequestParam("from") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date from,
-          @RequestParam("to") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date to
+          @RequestParam(value = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date from,
+          @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date to
   ) throws IOException {
     final long timeStart = System.currentTimeMillis();
     int[] a = tweetRepository.getTweetsPerHour(from, to);

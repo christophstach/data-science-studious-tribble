@@ -1,5 +1,8 @@
 package edu.christophstach.datasciencestudioustribble.repository;
 
+import edu.christophstach.datasciencestudioustribble.javascript.MapReduceOperation;
+import edu.christophstach.datasciencestudioustribble.javascript.TweetsPerHour;
+import edu.christophstach.datasciencestudioustribble.javascript.TweetsPerWeekday;
 import edu.christophstach.datasciencestudioustribble.model.MapReduceKeyValue;
 import edu.christophstach.datasciencestudioustribble.model.Tweet;
 import edu.christophstach.datasciencestudioustribble.model.diagram.HashTagOccurrence;
@@ -76,6 +79,7 @@ public class TweetRepositoryImpl implements TweetRepositoryCustom {
     int[] r = new int[24];
     MapReduceResults<MapReduceKeyValue> results;
     MapReduceOptions options = new MapReduceOptions().outputTypeInline();
+    MapReduceOperation js = new TweetsPerHour();
     Query query = new Query();
 
     if (from != null && to != null) {
@@ -86,10 +90,7 @@ public class TweetRepositoryImpl implements TweetRepositoryCustom {
       );
     }
 
-    String mapFn = readJavaScript("TweetsPerHour.map.js");
-    String reduceFn = readJavaScript("TweetsPerHour.reduce.js");
-
-    results = mongo.mapReduce(query, collectionName, mapFn, reduceFn, options, MapReduceKeyValue.class);
+    results = mongo.mapReduce(query, collectionName, js.map(), js.reduce(), options, MapReduceKeyValue.class);
     results.forEach(mapReduceKeyValue -> r[mapReduceKeyValue.getKey()] = mapReduceKeyValue.getValue());
 
     return r;
@@ -100,6 +101,7 @@ public class TweetRepositoryImpl implements TweetRepositoryCustom {
     int[] r = new int[7];
     MapReduceResults<MapReduceKeyValue> results;
     MapReduceOptions options = new MapReduceOptions().outputTypeInline();
+    MapReduceOperation js = new TweetsPerWeekday();
     Query query = new Query();
 
     if (from != null && to != null) {
@@ -110,10 +112,7 @@ public class TweetRepositoryImpl implements TweetRepositoryCustom {
       );
     }
 
-    String mapFn = readJavaScript("TweetsPerWeekday.map.js");
-    String reduceFn = readJavaScript("TweetsPerWeekday.reduce.js");
-
-    results = mongo.mapReduce(query, collectionName, mapFn, reduceFn, options, MapReduceKeyValue.class);
+    results = mongo.mapReduce(query, collectionName, js.map(), js.reduce(), options, MapReduceKeyValue.class);
     results.forEach(mapReduceKeyValue -> r[mapReduceKeyValue.getKey()] = mapReduceKeyValue.getValue());
 
     return r;

@@ -71,7 +71,6 @@ public class TweetRepositoryImpl implements TweetRepositoryCustom {
     }
 
     return mongo.aggregate(aggregation, Tweet.class, HashTagOccurrence.class).getMappedResults();
-
   }
 
   @Override

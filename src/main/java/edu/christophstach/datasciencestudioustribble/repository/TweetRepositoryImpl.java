@@ -40,14 +40,6 @@ public class TweetRepositoryImpl implements TweetRepositoryCustom {
   @Autowired
   private MongoTemplate mongo;
 
-  private String readJavaScript(String javaScriptFile) throws IOException {
-    Path path = Paths.get(new ClassPathResource("javascript/" + javaScriptFile).getFile().getAbsolutePath());
-    return Files.readAllLines(path)
-            .stream()
-            .reduce((concatenate, s) -> String.format("%s%n%s", concatenate, s))
-            .orElseThrow(IOException::new);
-  }
-
   @Override
   public List<HashTagOccurrence> getHashTagOccurrences(Date from, Date to) throws IOException {
     Aggregation aggregation;

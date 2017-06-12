@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -33,19 +31,24 @@ public class TwitterController {
   public List<HashTagOccurrence> mostUsedHashTagsAll(
           @RequestParam(value = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Calendar from,
           @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Calendar to
-  ) throws IOException {
+  ) {
+    List<HashTagOccurrence> result;
     final long timeStart = System.currentTimeMillis();
-    from.set(Calendar.HOUR, 0);
-    from.set(Calendar.MINUTE, 0);
-    from.set(Calendar.SECOND, 0);
-    from.set(Calendar.MILLISECOND, 0);
-    from.add(Calendar.HOUR, 24);
-    to.set(Calendar.HOUR, 0);
-    to.set(Calendar.MINUTE, 0);
-    to.set(Calendar.SECOND, 0);
-    to.set(Calendar.MILLISECOND, 0);
-    to.add(Calendar.HOUR, 48);
-    List<HashTagOccurrence> result = tweetRepository.getHashTagOccurrences(from.getTime(), to.getTime());
+    if (from != null && to != null) {
+      from.set(Calendar.HOUR, 0);
+      from.set(Calendar.MINUTE, 0);
+      from.set(Calendar.SECOND, 0);
+      from.set(Calendar.MILLISECOND, 0);
+      from.add(Calendar.HOUR, 24);
+      to.set(Calendar.HOUR, 0);
+      to.set(Calendar.MINUTE, 0);
+      to.set(Calendar.SECOND, 0);
+      to.set(Calendar.MILLISECOND, 0);
+      to.add(Calendar.HOUR, 48);
+      result = tweetRepository.getHashTagOccurrences(from.getTime(), to.getTime());
+    } else {
+      result = tweetRepository.getHashTagOccurrences(null, null);
+    }
     final long timeEnd = System.currentTimeMillis();
 
     logger.info(String.format(Locale.GERMANY, "Zeit der Anfrage 'most-used-hash-tags-all': %,d ms", (timeEnd - timeStart)));
@@ -57,19 +60,24 @@ public class TwitterController {
   public int[] tweetsPerWeekday(
           @RequestParam(value = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Calendar from,
           @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Calendar to
-  ) throws IOException {
+  ) {
+    int[] a;
     final long timeStart = System.currentTimeMillis();
-    from.set(Calendar.HOUR, 0);
-    from.set(Calendar.MINUTE, 0);
-    from.set(Calendar.SECOND, 0);
-    from.set(Calendar.MILLISECOND, 0);
-    from.add(Calendar.HOUR, 24);
-    to.set(Calendar.HOUR, 0);
-    to.set(Calendar.MINUTE, 0);
-    to.set(Calendar.SECOND, 0);
-    to.set(Calendar.MILLISECOND, 0);
-    to.add(Calendar.HOUR, 48);
-    int[] a = tweetRepository.getTweetsPerWeekday(from.getTime(), to.getTime());
+    if (from != null && to != null) {
+      from.set(Calendar.HOUR, 0);
+      from.set(Calendar.MINUTE, 0);
+      from.set(Calendar.SECOND, 0);
+      from.set(Calendar.MILLISECOND, 0);
+      from.add(Calendar.HOUR, 24);
+      to.set(Calendar.HOUR, 0);
+      to.set(Calendar.MINUTE, 0);
+      to.set(Calendar.SECOND, 0);
+      to.set(Calendar.MILLISECOND, 0);
+      to.add(Calendar.HOUR, 48);
+      a = tweetRepository.getTweetsPerWeekday(from.getTime(), to.getTime());
+    } else {
+      a = tweetRepository.getTweetsPerWeekday(null, null);
+    }
     final long timeEnd = System.currentTimeMillis();
 
     logger.info(String.format(Locale.GERMANY, "Zeit der Anfrage 'tweets-per-weekday': %,d ms", (timeEnd - timeStart)));
@@ -82,19 +90,24 @@ public class TwitterController {
   public int[] tweetsPerHour(
           @RequestParam(value = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Calendar from,
           @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Calendar to
-  ) throws IOException {
+  ) {
+    int[] a;
     final long timeStart = System.currentTimeMillis();
-    from.set(Calendar.HOUR, 0);
-    from.set(Calendar.MINUTE, 0);
-    from.set(Calendar.SECOND, 0);
-    from.set(Calendar.MILLISECOND, 0);
-    from.add(Calendar.HOUR, 24);
-    to.set(Calendar.HOUR, 0);
-    to.set(Calendar.MINUTE, 0);
-    to.set(Calendar.SECOND, 0);
-    to.set(Calendar.MILLISECOND, 0);
-    to.add(Calendar.HOUR, 48);
-    int[] a = tweetRepository.getTweetsPerHour(from.getTime(), to.getTime());
+    if (from != null && to != null) {
+      from.set(Calendar.HOUR, 0);
+      from.set(Calendar.MINUTE, 0);
+      from.set(Calendar.SECOND, 0);
+      from.set(Calendar.MILLISECOND, 0);
+      from.add(Calendar.HOUR, 24);
+      to.set(Calendar.HOUR, 0);
+      to.set(Calendar.MINUTE, 0);
+      to.set(Calendar.SECOND, 0);
+      to.set(Calendar.MILLISECOND, 0);
+      to.add(Calendar.HOUR, 48);
+      a = tweetRepository.getTweetsPerHour(from.getTime(), to.getTime());
+    } else {
+      a = tweetRepository.getTweetsPerHour(null, null);
+    }
     final long timeEnd = System.currentTimeMillis();
 
     logger.info(String.format(Locale.GERMANY, "Zeit der Anfrage 'tweets-per-hour': %,d ms", (timeEnd - timeStart)));

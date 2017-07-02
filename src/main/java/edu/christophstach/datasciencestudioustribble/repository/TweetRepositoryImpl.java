@@ -37,6 +37,11 @@ public class TweetRepositoryImpl implements TweetRepositoryCustom {
 
   @Override
   public List<HashTagOccurrence> getHashTagOccurrences(Date from, Date to) {
+    return getHashTagOccurrences(from, to, 50);
+  }
+
+  @Override
+  public List<HashTagOccurrence> getHashTagOccurrences(Date from, Date to, int count) {
     Aggregation aggregation;
 
     MatchOperation match = match(where("created_at_date").gte(from).lt(to));
@@ -44,7 +49,7 @@ public class TweetRepositoryImpl implements TweetRepositoryCustom {
     ProjectionOperation project = project("entities.hashtags.text").and("entities.hashtags.text").toLower().as("text");
     GroupOperation group = group("text").count().as("count");
     SortOperation sort = sort(Sort.Direction.DESC, "count");
-    LimitOperation limit = limit(50);
+    LimitOperation limit = limit(count);
 
     if (from != null && to != null) {
       aggregation = newAggregation(match, unwind, project, group, sort, limit);

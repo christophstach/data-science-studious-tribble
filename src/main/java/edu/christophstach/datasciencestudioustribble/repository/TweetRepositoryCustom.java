@@ -19,6 +19,13 @@ public interface TweetRepositoryCustom {
   public List<HashTagOccurrence> getHashTagOccurrences(Date from, Date to);
 
   /**
+   * Returns a list of how often hash tags occurred in tweets
+   *
+   * @return The list of has tag occurrences
+   */
+  public List<HashTagOccurrence> getHashTagOccurrences(Date from, Date to, int count);
+
+  /**
    * Returns tweets per hour
    *
    * @return An array of tweets per hour

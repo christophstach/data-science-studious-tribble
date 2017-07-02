@@ -30,7 +30,8 @@ public class TwitterController {
   @GetMapping("/twitter/most-used-hash-tags-all")
   public List<HashTagOccurrence> mostUsedHashTagsAll(
           @RequestParam(value = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Calendar from,
-          @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Calendar to
+          @RequestParam(value = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Calendar to,
+          @RequestParam(value = "count", required = false, defaultValue = "50") Integer count
   ) {
     List<HashTagOccurrence> result;
     final long timeStart = System.currentTimeMillis();
@@ -45,9 +46,9 @@ public class TwitterController {
       to.set(Calendar.SECOND, 0);
       to.set(Calendar.MILLISECOND, 0);
       to.add(Calendar.HOUR, 48);
-      result = tweetRepository.getHashTagOccurrences(from.getTime(), to.getTime());
+      result = tweetRepository.getHashTagOccurrences(from.getTime(), to.getTime(), count);
     } else {
-      result = tweetRepository.getHashTagOccurrences(null, null);
+      result = tweetRepository.getHashTagOccurrences(null, null, count);
     }
     final long timeEnd = System.currentTimeMillis();
 

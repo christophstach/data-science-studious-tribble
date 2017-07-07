@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.mapreduce.MapReduceResults;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -36,12 +37,12 @@ public class TweetRepositoryImpl implements TweetRepositoryCustom {
   private MongoTemplate mongo;
 
   @Override
-  public List<HashTagOccurrence> getHashTagOccurrences(Date from, Date to) {
+  public List<HashTagOccurrence> getHashTagOccurrences(Instant from, Instant to) {
     return getHashTagOccurrences(from, to, 50);
   }
 
   @Override
-  public List<HashTagOccurrence> getHashTagOccurrences(Date from, Date to, int count) {
+  public List<HashTagOccurrence> getHashTagOccurrences(Instant from, Instant to, int count) {
     Aggregation aggregation;
 
     MatchOperation match = match(where("created_at_date").gte(from).lt(to));
@@ -61,7 +62,7 @@ public class TweetRepositoryImpl implements TweetRepositoryCustom {
   }
 
   @Override
-  public int[] getTweetsPerHour(Date from, Date to) {
+  public int[] getTweetsPerHour(Instant from, Instant to) {
     int[] r = new int[24];
     MapReduceResults<MapReduceKeyValue> results;
     MapReduceOptions options = new MapReduceOptions().outputTypeInline();
@@ -83,7 +84,7 @@ public class TweetRepositoryImpl implements TweetRepositoryCustom {
   }
 
   @Override
-  public int[] getTweetsPerWeekday(Date from, Date to) {
+  public int[] getTweetsPerWeekday(Instant from, Instant to) {
     int[] r = new int[7];
     MapReduceResults<MapReduceKeyValue> results;
     MapReduceOptions options = new MapReduceOptions().outputTypeInline();

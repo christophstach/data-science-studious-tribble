@@ -2,6 +2,7 @@ package edu.christophstach.datasciencestudioustribble.repository;
 
 import edu.christophstach.datasciencestudioustribble.model.diagram.HashTagOccurrence;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -16,26 +17,26 @@ public interface TweetRepositoryCustom {
    *
    * @return The list of has tag occurrences
    */
-  public List<HashTagOccurrence> getHashTagOccurrences(Date from, Date to);
+  public List<HashTagOccurrence> getHashTagOccurrences(Instant from, Instant to);
 
   /**
    * Returns a list of how often hash tags occurred in tweets
    *
    * @return The list of has tag occurrences
    */
-  public List<HashTagOccurrence> getHashTagOccurrences(Date from, Date to, int count);
+  public List<HashTagOccurrence> getHashTagOccurrences(Instant from, Instant to, int count);
 
   /**
    * Returns tweets per hour
    *
    * @return An array of tweets per hour
    */
-  public int[] getTweetsPerHour(Date from, Date to);
+  public int[] getTweetsPerHour(Instant from, Instant to);
 
   /**
    * Returns tweets per weekday
    *
    * @return An array of tweets per hour
    */
-  public int[] getTweetsPerWeekday(Date from, Date to);
+  public int[] getTweetsPerWeekday(Instant from, Instant to);
 }

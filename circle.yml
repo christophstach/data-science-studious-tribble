@@ -1,0 +1,7 @@
+deployment:
+  production:
+    branch: master
+    commands:
+      - ssh ${BROCCOLI_USER}:${BROCCOLI_PASSWORD}@${BROCCOLI_HOST}:22
+      - ls
+      - exit

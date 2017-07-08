@@ -1,3 +1,7 @@
 server:
   port: 8080
 collection-name: tweetsBerlinGeo
+spring:
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false

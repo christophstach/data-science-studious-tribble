@@ -1,6 +1,7 @@
 package edu.christophstach.datasciencestudioustribble.controller;
 
 import edu.christophstach.datasciencestudioustribble.model.diagram.HashTagOccurrence;
+import edu.christophstach.datasciencestudioustribble.model.result.HashTagResult;
 import edu.christophstach.datasciencestudioustribble.repository.TweetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -9,12 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -26,6 +24,13 @@ import java.util.logging.Logger;
 @CrossOrigin(origins = {"http://christoph-stach.de", "https://christophstach.github.io", "http://localhost:8081", "http://127.0.0.1:8081"})
 public class TwitterController {
   private final static Logger logger = Logger.getLogger(TwitterController.class.getName());
+
+  private List<String> excludedHashTags = Arrays.asList(
+          "nowplaying", "ger", "berlin", "german", "brandenburg", "germany", "bbradio", "jobs", "dasauge", "repost",
+          "schleswig", "rostock", "potsdam", "rockt", "kassel", "dassmacc", "schwerin", "bremerhaven", "stralsund", "youtube",
+          "rocks", "koblenz", "hits", "bremen", "hro", "hst", "mecklenburg", "smaccforce", "radio", "mv", "webcam", "music",
+          "mecklenburgvorpommern", "trndnl", "photo"
+  );
 
   @Autowired
   private TweetRepository tweetRepository;
@@ -74,8 +79,8 @@ public class TwitterController {
   ) {
     final long timeStart = System.currentTimeMillis();
     int[] a = tweetRepository.getTweetsPerHour(
-      from,
-      to
+            from,
+            to
     );
     final long timeEnd = System.currentTimeMillis();
 
@@ -83,5 +88,59 @@ public class TwitterController {
 
     return a;
   }
+
+  @GetMapping("/twitter/weather")
+  public void weather() {
+
+  }
+
+  @GetMapping("/twitter/relevant-hash-tags-daily")
+  public List<HashTagResult> relevantHashTagsDaily() {
+    List<HashTagResult> list = new LinkedList<>();
+    Long days = ChronoUnit.DAYS.between(LocalDate.of(2017, Month.MAY, 18), LocalDate.now());
+
+    for (int i = 0; i <= days; i++) {
+      Instant from = LocalDate.now().minusDays(i).atTime(LocalTime.MIN).toInstant(ZoneOffset.UTC);
+      Instant to = LocalDate.now().minusDays(i).atTime(LocalTime.MAX).toInstant(ZoneOffset.UTC);
+
+      list.add(new HashTagResult(
+              Date.from(from),
+              Date.from(to),
+              tweetRepository.getHashTagOccurrences(from, to, 10, excludedHashTags)
+      ));
+    }
+
+    return list;
+  }
+
+  @GetMapping("/twitter/relevant-hash-tags-weekly")
+  public List<HashTagResult> relevantHashTagsWeekly() {
+    List<HashTagResult> list = new LinkedList<>();
+    Long days = ChronoUnit.DAYS.between(LocalDate.of(2017, Month.MAY, 18), LocalDate.now());
+
+    for (int i = 0; i <= days; i = i + 7) {
+      LocalDate monday = LocalDate.now().minusDays(i);
+      while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
+        monday = monday.minusDays(1);
+      }
+
+      LocalDate sunday = LocalDate.now().minusDays(i);
+      while (sunday.getDayOfWeek() != DayOfWeek.SUNDAY) {
+        sunday = sunday.plusDays(1);
+      }
+
+      Instant from = monday.atTime(LocalTime.MIN).toInstant(ZoneOffset.UTC);
+      Instant to = sunday.atTime(LocalTime.MAX).toInstant(ZoneOffset.UTC);
+
+      list.add(new HashTagResult(
+              Date.from(from),
+              Date.from(to),
+              tweetRepository.getHashTagOccurrences(from, to, 10, excludedHashTags)
+      ));
+    }
+
+    return list;
+  }
+
 
 }

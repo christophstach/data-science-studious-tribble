@@ -17,7 +17,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
@@ -38,24 +38,28 @@ public class TweetRepositoryImpl implements TweetRepositoryCustom {
 
   @Override
   public List<HashTagOccurrence> getHashTagOccurrences(Instant from, Instant to) {
-    return getHashTagOccurrences(from, to, 50);
+    return getHashTagOccurrences(from, to, 50, null);
   }
 
   @Override
-  public List<HashTagOccurrence> getHashTagOccurrences(Instant from, Instant to, int count) {
+  public List<HashTagOccurrence> getHashTagOccurrences(Instant from, Instant to, int count, List<String> excludes) {
     Aggregation aggregation;
+
+    excludes = excludes != null ? excludes : new ArrayList<>();
+
 
     MatchOperation match = match(where("created_at_date").gte(from).lt(to));
     UnwindOperation unwind = unwind("entities.hashtags");
     ProjectionOperation project = project("entities.hashtags.text").and("entities.hashtags.text").toLower().as("text");
+    MatchOperation notMatch = match(where("text").not().in(excludes));
     GroupOperation group = group("text").count().as("count");
     SortOperation sort = sort(Sort.Direction.DESC, "count");
     LimitOperation limit = limit(count);
 
     if (from != null && to != null) {
-      aggregation = newAggregation(match, unwind, project, group, sort, limit);
+      aggregation = newAggregation(match, unwind, project, notMatch, group, sort, limit);
     } else {
-      aggregation = newAggregation(unwind, project, group, sort, limit);
+      aggregation = newAggregation(unwind, project, notMatch, group, sort, limit);
     }
 
     return mongo.aggregate(aggregation, Tweet.class, HashTagOccurrence.class).getMappedResults();

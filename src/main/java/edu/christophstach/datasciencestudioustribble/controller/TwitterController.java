@@ -45,7 +45,9 @@ public class TwitterController {
 
     List<HashTagOccurrence> result = tweetRepository.getHashTagOccurrences(
             from,
-            to
+            to,
+            count,
+            null
     );
     final long timeEnd = System.currentTimeMillis();
 

@@ -118,7 +118,7 @@ public class TwitterController {
   @GetMapping("/twitter/relevant-hash-tags-weekly")
   public List<HashTagResult> relevantHashTagsWeekly() {
     List<HashTagResult> list = new LinkedList<>();
-    Long days = ChronoUnit.DAYS.between(LocalDate.of(2017, Month.MAY, 18), LocalDate.now(ZoneId.of("EuropeBerlin")));
+    Long days = ChronoUnit.DAYS.between(LocalDate.of(2017, Month.MAY, 18), LocalDate.now());
 
     for (int i = 0; i <= days; i = i + 7) {
       LocalDate monday = LocalDate.now().minusDays(i);
